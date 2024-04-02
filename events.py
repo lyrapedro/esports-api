@@ -6,6 +6,7 @@ import json
 
 
 class EventType(Enum):
+    ALL = 0
     MAJOR = 1
     INTERNATIONAL_LAN = 2
     REGIONAL_LAN = 3
@@ -17,8 +18,13 @@ class GetEvents:
     def __init__(self):
         self.scraper = cloudscraper.create_scraper()
 
-    def get_events(self, event_type):
-        html = self.scraper.get('https://www.hltv.org/events?eventType={}#tab-TODAY'.format(EventType(event_type).name))
+    def get_events(self, event_type=0):
+        if event_type == EventType.ALL:
+            html = self.scraper.get('https://www.hltv.org/events')
+        else:
+            html = self.scraper.get(
+                'https://www.hltv.org/events?eventType={}#tab-TODAY'.format(EventType(event_type).name))
+
         bs = BeautifulSoup(html.content, 'html.parser')
         current_events_section = bs.find(id='TODAY')
 
@@ -38,4 +44,4 @@ class GetEvents:
 
 
 eventsScraper = GetEvents()
-print(eventsScraper.get_events(4))
+print(eventsScraper.get_events())
