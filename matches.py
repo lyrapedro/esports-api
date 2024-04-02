@@ -38,7 +38,7 @@ class GetMatches:
         result = []
 
         for match in live_matches:
-            #TODO: GET CURRENT MAP NAME
+            ##TODO: GET CURRENT MAP NAME
             # expand_score_buttons = driver.find_elements(By.CLASS_NAME, 'expand-match-btn')
             # for button in expand_score_buttons:
             #     button.click()
