@@ -1,3 +1,5 @@
+import time
+
 from selenium_stealth import stealth
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -5,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import json
+import re
 
 
 class GetMatches:
@@ -28,34 +31,34 @@ class GetMatches:
 
         self.driver.get("https://www.hltv.org/events/{}/matches".format(event_id))
 
-        WebDriverWait(self.driver, 45).until(EC.visibility_of_element_located((By.CLASS_NAME, 'currentMapScore')))
-
         html = self.driver.page_source
 
         bs = BeautifulSoup(html, "html.parser")
 
-        live_matches = bs.find_all("div", class_="liveMatch-container")
+        live_matches = bs.find_all("div", class_="liveMatch")
         result = []
+        match_maps = []
 
         for match in live_matches:
-            ##TODO: GET CURRENT MAP NAME
-            # expand_score_buttons = driver.find_elements(By.CLASS_NAME, 'expand-match-btn')
-            # for button in expand_score_buttons:
-            #     button.click()
-            # current_map = match.find("div", class_="scorebot-container").find("div", class_="live-text")
-            # print(current_map)
-            match_id = match.find("div", class_="liveMatch")['data-livescore-match']
+            match_id = match['data-livescore-match']
             teams = match.find_all("div", class_="matchTeam")
             team1_name = teams[0].find("div", class_="matchTeamName").text
-            team1_score_section = teams[0].find("div", class_="matchTeamScore")
-            team1_current_score = team1_score_section.find("span", class_="currentMapScore").text.strip()
-            team1_current_map_score = team1_score_section.find("span", class_="mapScore").find("span").text.strip()
             team2_name = teams[1].find("div", class_="matchTeamName").text
-            team2_score_section = teams[1].find("div", class_="matchTeamScore")
-            team2_current_score = team2_score_section.find("span", class_="currentMapScore").text.strip()
-            team2_current_map_score = team2_score_section.find("span", class_="mapScore").find("span").text.strip()
-            result.append({"match_id": match_id, "team1": {"name": team1_name, "currentScore": team1_current_score, "mapsWon": team1_current_map_score},
-                           "team2": {"name": team2_name, "currentScore": team2_current_score, "mapsWon": team2_current_map_score}})
+            match_url = match.find('a', class_='match')['href']
+            self.driver.get("https://www.hltv.org{}".format(match_url))
+            #TODO: ARRUMAR, DEU CERTO UMA VEZ E DPS NAO DEU MAIS
+            self.driver.implicitly_wait(10)
+            match_html = self.driver.page_source
+            bs = BeautifulSoup(match_html, "html.parser")
+            maps_div = bs.find_all("div", class_="mapholder")
+            for map_div in maps_div:
+                map_name = map_div.find('img')['alt']
+                scores_section = map_div.find_all('div', class_='results-team-score')
+                team1_current_score = scores_section[0].text.strip()
+                team2_current_score = scores_section[1].text.strip()
+                match_maps.append({"map_name": map_name, "team1_score": team1_current_score, "team2_score": team2_current_score})
+
+            result.append({"match_id": match_id, "team1_name": team1_name, "team2_name": team2_name, "match_maps": match_maps})
 
         self.driver.quit()
         json_result = json.dumps(result, ensure_ascii=False, indent=4)
@@ -63,6 +66,6 @@ class GetMatches:
 
 
 matchesScraper = GetMatches()
-print(matchesScraper.get_matches(7720))
+print(matchesScraper.get_matches(7670))
 
 
