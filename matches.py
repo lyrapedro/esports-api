@@ -37,7 +37,6 @@ class GetMatches:
 
         live_matches = bs.find_all("div", class_="liveMatch")
         result = []
-        match_maps = []
 
         for match in live_matches:
             match_id = match['data-livescore-match']
@@ -46,11 +45,13 @@ class GetMatches:
             team2_name = teams[1].find("div", class_="matchTeamName").text
             match_url = match.find('a', class_='match')['href']
             self.driver.get("https://www.hltv.org{}".format(match_url))
-            #TODO: ARRUMAR, DEU CERTO UMA VEZ E DPS NAO DEU MAIS
             self.driver.implicitly_wait(10)
             match_html = self.driver.page_source
             bs = BeautifulSoup(match_html, "html.parser")
             maps_div = bs.find_all("div", class_="mapholder")
+
+            match_maps = []
+
             for map_div in maps_div:
                 map_name = map_div.find('img')['alt']
                 scores_section = map_div.find_all('div', class_='results-team-score')
@@ -66,6 +67,6 @@ class GetMatches:
 
 
 matchesScraper = GetMatches()
-print(matchesScraper.get_matches(7670))
+print(matchesScraper.get_matches(7666))
 
 
