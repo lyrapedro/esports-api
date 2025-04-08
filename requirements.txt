@@ -1,0 +1,5 @@
+selenium
+selenium_stealth
+bs4
+cloudscraper
+playwright
