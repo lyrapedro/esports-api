@@ -1,26 +1,26 @@
 from bs4 import BeautifulSoup
 import json
 import time
-from playwright.sync_api import sync_playwright
-from contextlib import contextmanager
+from playwright.async_api import async_playwright
+from contextlib import asynccontextmanager
 
-@contextmanager
-def browser_context():
+@asynccontextmanager
+async def browser_context():
     """Helper to manage browser lifecycle"""
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(
-            headless=True,
-            args=["--no-sandbox", "--disable-dev-shm-usage"]
-        )
-        try:
-            yield browser
-        finally:
-            browser.close()
+    playwright = await async_playwright().start()
+    browser = await playwright.chromium.launch(
+        headless=True,
+        args=["--no-sandbox", "--disable-dev-shm-usage"]
+    )
+    try:
+        yield browser
+    finally:
+        browser.close()
 
-def get_live_matches(event_id):
+async def get_live_matches(event_id):
     """Get live matches for an event"""
-    with browser_context() as browser:
-        page = browser.new_page(
+    async with browser_context() as browser:
+        page = await browser.new_page(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             extra_http_headers={
                 "Accept-Language": "en-US,en;q=0.9",
@@ -29,10 +29,10 @@ def get_live_matches(event_id):
             }
         )
         try:
-            page.goto(f"https://www.hltv.org/events/{event_id}/matches", timeout=60000)
-            page.wait_for_selector(".liveMatches", timeout=15000)
+            await page.goto(f"https://www.hltv.org/events/{event_id}/matches", timeout=60000)
+            await page.wait_for_selector(".liveMatches", timeout=15000)
             time.sleep(2)
-            content = page.content()
+            content = await page.content()
             
             bs = BeautifulSoup(content, "html.parser")
             live_matches = bs.find_all('div', class_='match', attrs={'data-livescore-match': True})
@@ -52,17 +52,17 @@ def get_live_matches(event_id):
                     "match_url": match_url
                 })
             
-            return json.dumps(result, ensure_ascii=False, indent=4)
+            return result
         
         except Exception as e:
-            return json.dumps({"error": str(e)}, indent=4)
+            return {"error": str(e)}
         finally:
             page.close()
 
-def get_match_details(match_url):
+async def get_match_details(match_url):
     """Get details for a specific match"""
-    with browser_context() as browser:
-        page = browser.new_page(
+    async with browser_context() as browser:
+        page = await browser.new_page(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             extra_http_headers={
                 "Accept-Language": "en-US,en;q=0.9",
@@ -70,10 +70,10 @@ def get_match_details(match_url):
             }
         )
         try:
-            page.goto(f"https://www.hltv.org{match_url}", timeout=60000)
-            page.wait_for_selector(".mapholder", timeout=15000)
+            await page.goto(f"https://www.hltv.org{match_url}", timeout=60000)
+            await page.wait_for_selector(".mapholder", timeout=15000)
             time.sleep(2)
-            content = page.content()
+            content = await page.content()
             
             bs = BeautifulSoup(content, "html.parser")
             maps_div = bs.find_all("div", class_="mapholder")
@@ -89,9 +89,9 @@ def get_match_details(match_url):
                     teams[1].text: scores[1].text.strip()
                 })
             
-            return json.dumps({"match_maps": match_maps}, ensure_ascii=False, indent=4)
+            return {"match_maps": match_maps}
         
         except Exception as e:
-            return json.dumps({"error": str(e)}, indent=4)
+            return {"error": str(e)}
         finally:
-            page.close()
+            await page.close()
