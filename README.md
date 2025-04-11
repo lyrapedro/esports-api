@@ -1,16 +1,22 @@
+
 ## Install Python3 Virtual env
 
-    python3 -m venv venv
+    python -m venv venv
 
     source venv/bin/activate
 
 ## Install requirements
 
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
 
     playwright install-deps
 
-    playwright install
+    playwright install chromium
 
-## How to use
-    Full functional example in example.py file
+## How to use (Local server)
+Run the main.py file to run a local api server
+
+    python main.py
+
+Now you can see the API docs in local server (default: http://localhost:3001/)
+    
