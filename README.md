@@ -7,11 +7,9 @@
 
 ## Install requirements
 
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
 
-    playwright install-deps
-
-    playwright install
+    playwright install chromium
 
 ## How to use
 Run the main.py file to run a local api server
