@@ -1,12 +1,18 @@
 {
-  "builds": [
-    {
-      "src": "src/main.py",
-      "use": "@vercel/python",
-      "config": {
-        "installCommand": "bash install_dependencies.sh && pip install -r requirements.txt",
-        "includeFiles": ["src/**"]
+    "builds": [
+      {
+        "src": "src/main.py",
+        "use": "@vercel/python",
+        "config": {
+          "installCommand": "bash install_dependencies.sh && pip install -r requirements.txt",
+          "includeFiles": ["src/**"]
+        }
       }
-    }
-  ]
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "src/main.py"
+      }
+    ]
 }
