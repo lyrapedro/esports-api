@@ -37,21 +37,18 @@ def get_current_events(event_type=0):
             }
         )
         try:
-            # Navigate to appropriate URL based on event type
             if event_type == EventType.ALL.value:
-                page.goto('https://www.hltv.org/events')
+                page.goto('https://www.hltv.org/events#tab-ALL')
             else:
-                page.goto(f'https://www.hltv.org/events?eventType={EventType(event_type).name}#tab-TODAY')
+                page.goto(f'https://www.hltv.org/events?eventType={EventType(event_type).name}#tab-ALL')
 
-            # Wait for and parse content
-            page.wait_for_selector('#TODAY', timeout=15000)
+            page.wait_for_selector('.tab-content#ALL', timeout=15000)
             content = page.content()
             bs = BeautifulSoup(content, 'html.parser')
             
-            # Extract events data
-            current_events_section = bs.find(id='TODAY')
+            current_events_section = bs.select_one('.tab-content#ALL')
             events = current_events_section.find_all('a')
-            pattern = r'\d+'  # For extracting event IDs
+            pattern = r'\d+'
             
             result = []
             for event in events:

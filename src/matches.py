@@ -82,10 +82,11 @@ def get_match_details(match_url):
             for map_div in maps_div:
                 map_name = map_div.find('img')['alt']
                 scores = map_div.find_all('div', class_='results-team-score')
+                teams = map_div.find_all("div", class_="results-teamname text-ellipsis")
                 match_maps.append({
                     "map_name": map_name,
-                    "team1_score": scores[0].text.strip(),
-                    "team2_score": scores[1].text.strip()
+                    teams[0].text: scores[0].text.strip(),
+                    teams[1].text: scores[1].text.strip()
                 })
             
             return json.dumps({"match_maps": match_maps}, ensure_ascii=False, indent=4)
