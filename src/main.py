@@ -5,7 +5,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 import uvicorn
-from src.api.api import router
+from api.api import router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
