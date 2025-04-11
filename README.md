@@ -11,3 +11,6 @@
     playwright install-deps
 
     playwright install
+
+## How to use
+    Full functional example in example.py file
