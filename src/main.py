@@ -5,12 +5,6 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 import uvicorn
-import sys
-import os
-
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, PROJECT_ROOT)
-
 from api.api import router
 
 logging.basicConfig(level=logging.INFO)
