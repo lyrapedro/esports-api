@@ -1,3 +1,4 @@
+
 ## Install Python3 Virtual env
 
     python3 -m venv venv
@@ -13,4 +14,7 @@
     playwright install
 
 ## How to use
-    Full functional example in example.py file
+Run the main.py file to run a local api server
+
+    python3 main.py
+    
