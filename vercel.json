@@ -1,8 +1,15 @@
 {
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "src/main.py"
-      }
-    ]
+  "builds": [
+    {
+      "src": "src/main.py",
+      "use": "@vercel/python",
+      "installCommand": "pip install -r requirements.txt && playwright install chromium"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/main.py"
+    }
+  ]
 }
