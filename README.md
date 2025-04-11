@@ -11,10 +11,11 @@
 
     playwright install chromium
 
-## How to use
+## How to use (Local server)
 Run the main.py file to run a local api server
 
-    python3 main.py
+    cd src
+    PYTHONPATH=.. python main.py
 
 Now you can see the API docs in local server (default: http://localhost:3001/)
     
