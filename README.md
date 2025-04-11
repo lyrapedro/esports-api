@@ -17,4 +17,6 @@
 Run the main.py file to run a local api server
 
     python3 main.py
+
+Now you can see the API docs in local server (default: http://localhost:3001/)
     
