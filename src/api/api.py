@@ -26,23 +26,19 @@ async def CS_events(request: Request, event_type: int = 0):
     """
     return await cs.cs_current_events(event_type)
 
-@router.get("/cs/matches")
+@router.get("/cs/event/matches")
 @limiter.limit("100/minute")
-async def CS_matches(request: Request, event_id: str):
+async def CS_event_live_matches(request: Request, event_id: str):
     """
         query parameters:\n
             "event_id": ID of event\n
     """
     return await cs.cs_live_matches(event_id)
 
-@router.get("/cs/match")
+@router.get("/cs/matches")
 @limiter.limit("100/minute")
-async def CS_matches(request: Request, match_url: str):
-    """
-        query parameters:\n
-            "match_url": Partial URL of match (returned from /cs/matches response)\n
-    """
-    return await cs.cs_match_details(match_url)
+async def CS_matches(request: Request):
+    return await cs.cs_all_live_matches()
 
 @router.get("/health")
 def health():

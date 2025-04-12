@@ -1,6 +1,6 @@
 bs4
-playwright
 fastapi
 slowapi
 uvicorn
 requests
+cloudscraper
