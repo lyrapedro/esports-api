@@ -11,6 +11,8 @@ limiter = Limiter(key_func=get_remote_address)
 cs = Cs()
 vlr = Vlr()
 
+"""CS endpoints"""
+
 @router.get("/cs/events")
 @limiter.limit("100/minute")
 async def CS_events(request: Request, event_type: int = 0):
@@ -39,6 +41,15 @@ async def CS_event_live_matches(request: Request, event_id: str):
 @limiter.limit("100/minute")
 async def CS_matches(request: Request):
     return await cs.cs_all_live_matches()
+
+
+"""VLR endpoints"""
+
+@router.get("/vlr/events")
+@limiter.limit("100/minute")
+async def VLR_events(request: Request):
+    return await vlr.vlr_current_events()
+
 
 @router.get("/health")
 def health():
