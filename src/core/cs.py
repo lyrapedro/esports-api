@@ -1,4 +1,4 @@
-from core.scrapers.hltv import (
+from src.core.scrapers.hltv import (
     get_match_details,
     get_current_events,
     get_live_matches,

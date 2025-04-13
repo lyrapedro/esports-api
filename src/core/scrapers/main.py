@@ -2,7 +2,7 @@ import requests
 import cloudscraper
 
 def check_health():
-    sites = ["https://esportsapi.vercel.app", "https://vlr.gg", "https://hltv.org"]
+    sites = ["https://esports-api-50r7.onrender.com", "https://vlr.gg", "https://hltv.org"]
     results = {}
     for site in sites:
         try:

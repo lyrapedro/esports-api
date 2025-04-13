@@ -2,14 +2,16 @@ from fastapi import APIRouter, Query, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from core.scrapers.main import check_health
-from core.cs import Cs
-from core.vlr import Vlr
+from src.core.scrapers.main import check_health
+from src.core.cs import Cs
+from src.core.vlr import Vlr
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 cs = Cs()
 vlr = Vlr()
+
+"""CS endpoints"""
 
 @router.get("/cs/events")
 @limiter.limit("100/minute")
@@ -39,6 +41,15 @@ async def CS_event_live_matches(request: Request, event_id: str):
 @limiter.limit("100/minute")
 async def CS_matches(request: Request):
     return await cs.cs_all_live_matches()
+
+
+"""VLR endpoints"""
+
+@router.get("/vlr/events")
+@limiter.limit("100/minute")
+async def VLR_events(request: Request):
+    return await vlr.vlr_current_events()
+
 
 @router.get("/health")
 def health():

@@ -109,8 +109,8 @@ async def get_all_live_matches():
             team2_current_score = teams_details[3].find('span', class_='current-map-score').text
             team1_map_score = teams_details[2].find('span', attrs={'data-livescore-maps-won-for': True}).text
             team2_map_score = teams_details[3].find('span', attrs={'data-livescore-maps-won-for': True}).text
-            match_type = match.select_one('.match-meta').text
-            match_event_name = match.select_one('.match-event .text-ellipsis')['data-event-headline']
+            match_type = match.find_all('div', class_='match-meta')[1].text
+            match_event_name = match.find('div', class_='match-event text-ellipsis')['data-event-headline']
             result.append({
                 "event_name": match_event_name,
                 "match_type": match_type,
@@ -123,5 +123,8 @@ async def get_all_live_matches():
                     team2_name: team2_current_score
                 }
             })
+
+        return result
+
     except Exception as e:
         return {"error": str(e)}
