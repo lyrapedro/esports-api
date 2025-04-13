@@ -1,0 +1,28 @@
+app = "esports-api"  # 🔴 Replace with your Fly.io app name (must be unique)
+
+kill_signal = "SIGINT"
+kill_timeout = 5
+
+[build]
+  builder = "paketobuildpacks/builder:base"
+  buildpacks = ["gcr.io/paketo-buildpacks/python"]
+
+[env]
+  PORT = "8080"  # Fly.io expects this internal port
+  PYTHONPATH = "/app/src"  # ⚠️ Critical: Ensures Python can find your `main.py`
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false  # Prevents unnecessary stops
+
+  [[http_service.ports]]
+    handlers = ["http"]
+    port = "80"
+
+  [[http_service.ports]]
+    handlers = ["tls", "http"]
+    port = "443"
+
+[deploy]
+  strategy = "rolling"
