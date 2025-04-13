@@ -2,9 +2,9 @@ from fastapi import APIRouter, Query, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from core.scrapers.main import check_health
-from core.cs import Cs
-from core.vlr import Vlr
+from src.core.scrapers.main import check_health
+from src.core.cs import Cs
+from src.core.vlr import Vlr
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)

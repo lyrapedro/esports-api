@@ -1,4 +1,4 @@
-from core.scrapers.vlrgg import (
+from src.core.scrapers.vlrgg import (
     get_current_events,
     get_live_matches,
     get_match_details
