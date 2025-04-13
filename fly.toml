@@ -14,7 +14,7 @@ kill_timeout = 5
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = false  # Prevents unnecessary stops
+  auto_stop_machines = false 
 
   [[http_service.ports]]
     handlers = ["http"]
