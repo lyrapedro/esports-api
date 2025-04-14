@@ -1,7 +1,7 @@
 from src.core.scrapers.vlrgg import (
     get_current_events,
     get_live_matches,
-    get_match_details
+    get_all_live_matches
 )
 
 class Vlr:
@@ -14,8 +14,8 @@ class Vlr:
         return get_current_events()
     
     @staticmethod
-    def vlr_match_details(match_url):
-        return get_match_details(match_url)
+    def vlr_all_live_matches():
+        return get_all_live_matches()
     
 if __name__ == "__main__":
     print(Vlr.vlr_current_events())

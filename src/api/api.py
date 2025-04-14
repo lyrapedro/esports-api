@@ -50,6 +50,16 @@ async def CS_matches(request: Request):
 async def VLR_events(request: Request):
     return await vlr.vlr_current_events()
 
+@router.get("/vlr/event/matches")
+@limiter.limit("100/minute")
+async def VLR_event_live_matches(request: Request, event_url: str):
+    return await vlr.vlr_live_matches(event_url)
+
+@router.get("/vlr/matches")
+@limiter.limit("100/minute")
+async def VLR_matches(request: Request):
+    return await vlr.vlr_all_live_matches()
+
 
 @router.get("/health")
 def health():

@@ -18,13 +18,13 @@ async def get_current_events(event_type=0):
     try:
         content = ""
         if event_type == EventType.ALL.value:
-            content = scraper.get('https://www.hltv.org/events#tab-ALL').text
+            content = scraper.get('https://www.hltv.org/events#tab-TODAY').text
         else:
-            content = scraper.get(f'https://www.hltv.org/events?eventType={EventType(event_type).name}#tab-ALL').text
+            content = scraper.get(f'https://www.hltv.org/events?eventType={EventType(event_type).name}#tab-TODAY').text
 
         for attempt in range(5):
             bs = BeautifulSoup(content, 'html.parser')
-            target_element = bs.select_one('.tab-content#ALL')
+            target_element = bs.select_one('.tab-content#TODAY')
             if target_element:
                 print("Found the element!")
                 break
@@ -32,7 +32,7 @@ async def get_current_events(event_type=0):
                 print(f"Attempt {attempt + 1}: Element not found, waiting...")
                 time.sleep(5)
         
-        current_events_section = bs.select_one('.tab-content#ALL')
+        current_events_section = bs.select_one('.tab-content#TODAY')
         events = current_events_section.find_all('a')
         pattern = r'\d+'
         

@@ -31,12 +31,14 @@ async def get_live_matches(event_id):
             team1_name = teams[0].find("div", class_="match-teamname").text
             team2_name = teams[1].find("div", class_="match-teamname").text
             match_url = match.find('a')['href']
+            match_maps = await get_match_details(match_url)
             
             result.append({
                 "match_id": match_id,
-                "team1_name": team1_name,
-                "team2_name": team2_name,
-                "match_url": match_url
+                "match": f"{team1_name} vs {team2_name}",
+                "match_type": f"bo{len(match_maps)}",
+                "match_url": match_url,
+                "maps": match_maps
             })
         
         return result
@@ -70,12 +72,13 @@ async def get_match_details(match_url):
             scores = map_div.find_all('div', class_='results-team-score')
             teams = map_div.find_all("div", class_="results-teamname text-ellipsis")
             match_maps.append({
-                "map_name": map_name,
-                teams[0].text: scores[0].text.strip(),
-                teams[1].text: scores[1].text.strip()
+                map_name: {
+                    teams[0].text: scores[0].text.strip(),
+                    teams[1].text: scores[1].text.strip()
+                }
             })
         
-        return {"match_maps": match_maps}
+        return match_maps
     
     except Exception as e:
         return {"error": str(e)}
