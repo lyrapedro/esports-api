@@ -4,4 +4,3 @@ slowapi
 uvicorn
 requests
 cloudscraper
-selenium
