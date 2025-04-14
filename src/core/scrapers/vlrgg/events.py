@@ -7,22 +7,23 @@ import requests
 async def get_current_events():
     """Get current events from VLR.GG"""
 
-    content = requests.get("https://www.vlr.gg/events").text
+    content = requests.get("https://www.vlr.gg").text
     bs = BeautifulSoup(content, 'html.parser')
-    ongoing_events = bs.select('a.event-item:has(span.mod-ongoing)')
+
+    live_events_h1 = bs.find('h1', class_='wf-label mod-sidebar', string=lambda text: 'live events' in text.lower().strip())
+
+    target_div = live_events_h1.find_next_sibling('div', class_='wf-module wf-card mod-sidebar')
+
+    live_events = target_div.select('a.wf-module-item.event-item')
 
     result = []
 
-    for event in ongoing_events:
-        event_name = event.find('div', class_='event-item-title').text.strip()
-        print(event_name)
+    for event in live_events:
+        event_name = event.find('div', class_='event-item-name').text.strip()
         event_url = event['href']
-        print(event_url)
         match = re.search(r'/event/(\d+)', event_url)
         event_id = match.group(1)
-        print(event_id)
-        region_flag = event.find('i', class_='flag')
-        event_region = str(region_flag).split('mod-')[1].split('"')[0]
+        event_region = event.find('div', class_="event-item-tag").text.strip()
 
         result.append({
             "id": event_id,
