@@ -15,10 +15,6 @@ class Cs:
         return await get_current_events(event_type)
     
     @staticmethod
-    async def cs_match_details(match_url):
-        return await get_match_details(match_url)
-    
-    @staticmethod
     async def cs_all_live_matches():
         return await get_all_live_matches()
     

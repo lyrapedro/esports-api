@@ -33,8 +33,8 @@ async def get_live_matches(event_url):
         match_url = match['href']
         match_page = requests.get(f"https://www.vlr.gg{match_url}").text
         bs_match = BeautifulSoup(match_page, 'html.parser')
-        match_type = bs_match.select_one('.match-header-vs-note').text.strip()
-        map_score = bs_match.select_one('.match-header-vs-score').find_all('span')
+        match_type = bs_match.select('div.match-header-vs-note')[1].text.strip()
+        map_score = bs_match.select('.match-header-vs-score')[1].find_all('span')
         team1_map_score = map_score[0].text.strip()
         team2_map_score = map_score[2].text.strip() # 2 because index 1 is the separator (:)
         maps_containers = bs_match.find_all('div', class_='vm-stats-game', attrs={'data-game-id': True})

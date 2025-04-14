@@ -21,8 +21,8 @@ async def get_current_events():
     for event in live_events:
         event_name = event.find('div', class_='event-item-name').text.strip()
         event_url = event['href']
-        match = re.search(r'/event/(\d+)', event_url)
-        event_id = match.group(1)
+        event_url = event_url.replace("/event", "", 1)
+        event_id = event_url.split('/')[1]
         event_region = event.find('div', class_="event-item-tag").text.strip()
 
         result.append({
