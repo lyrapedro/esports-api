@@ -1,0 +1,42 @@
+using EsportsApi.Services;
+using EsportsApi.Services.Interfaces;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IValorantService, ValorantService>();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.MapGet("/vlr/events", (IValorantService valorantService) =>
+    {
+        var events = valorantService.GetLiveEvents();
+
+        return events;
+    })
+.WithName("GetLiveEvents")
+.WithOpenApi();
+
+app.MapGet("/vlr/event/{url}/matches", (string url, IValorantService valorantService) =>
+    {
+        var matches = valorantService.GetLiveMatches(url);
+
+        return matches;
+    })
+    .WithName("GetLiveMatchesFromEvent")
+    .WithOpenApi();
+
+app.Run();
