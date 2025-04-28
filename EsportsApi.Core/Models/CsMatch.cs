@@ -1,6 +1,6 @@
 namespace EsportsApi.Core.Models;
 
-public class ValorantMatch : FpsMatch
+public class CsMatch : FpsMatch
 {
 
 }

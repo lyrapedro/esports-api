@@ -3,9 +3,9 @@ using EsportsApi.Services.Helpers.Extensions;
 using EsportsApi.Core.Models;
 using HtmlAgilityPack;
 
-namespace EsportsApi.Core.Scrapers.VlrGG;
+namespace EsportsApi.Core.Scrapers;
 
-public class VlrGGScraper : IValorantScraper
+public class VlrGgScraper : IValorantScraper
 {
     public List<ValorantEvent> GetLiveEvents()
     {
@@ -96,7 +96,6 @@ public class VlrGGScraper : IValorantScraper
             var team1MapScore = mapScore[0].InnerText.Trim();
             var team2MapScore = mapScore[2].InnerText.Trim(); // 2 porque o índice 1 é o separador (:)
             
-            // Extrair mapas
             var mapsContainers = bsMatch.DocumentNode
                 .Descendants("div")
                 .Where(div => 
@@ -158,7 +157,7 @@ public class VlrGGScraper : IValorantScraper
             
             result.Add(new ValorantMatch
             {
-                Name = $"{team1Name} vs {team2Name}",
+                Match = $"{team1Name} vs {team2Name}",
                 Type = matchType,
                 MapScore = new Dictionary<string, int>
                 {
