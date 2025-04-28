@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using HtmlAgilityPack;
 
-namespace EsportsApi.Core.Helpers.Extensions;
+namespace EsportsApi.Services.Helpers.Extensions;
 
 public static class HtmlNodeExtensions
 {

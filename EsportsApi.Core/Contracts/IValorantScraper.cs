@@ -1,8 +1,8 @@
-using EsportsApi.Services.Models;
+using EsportsApi.Core.Models;
 
-namespace EsportsApi.Services.Interfaces;
+namespace EsportsApi.Core.Contracts;
 
-public interface IValorantService
+public interface IValorantScraper
 {
     public List<ValorantEvent> GetLiveEvents();
     public List<ValorantMatch> GetLiveMatches(string eventUrl);

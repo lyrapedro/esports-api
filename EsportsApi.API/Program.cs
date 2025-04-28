@@ -1,5 +1,5 @@
+using EsportsApi.Core.Interfaces;
 using EsportsApi.Services;
-using EsportsApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IValorantService, ValorantService>();
+builder.Services.AddScraperServices();
 
 var app = builder.Build();
 

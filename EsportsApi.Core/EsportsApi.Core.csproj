@@ -7,9 +7,4 @@
         <RootNamespace>EsportsApi.Core</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
-      <PackageReference Include="HtmlAgilityPack.CssSelectors" Version="1.0.2" />
-    </ItemGroup>
-
 </Project>

@@ -1,4 +1,4 @@
-namespace EsportsApi.Services.Models;
+namespace EsportsApi.Core.Models;
 
 public class ValorantEvent
 {

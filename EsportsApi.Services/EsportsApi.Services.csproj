@@ -8,5 +8,9 @@
     <ItemGroup>
         <ProjectReference Include="..\EsportsApi.Core\EsportsApi.Core.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.3.25171.5" />
+    </ItemGroup>
 
 </Project>
