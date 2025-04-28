@@ -4,6 +4,6 @@ namespace EsportsApi.Core.Contracts;
 
 public interface IValorantScraper
 {
-    public List<ValorantEvent> GetLiveEvents();
-    public List<ValorantMatch> GetLiveMatches(string eventUrl);
+    public Task<List<ValorantEvent>> GetLiveEvents();
+    public Task<List<ValorantMatch>> GetLiveMatches(int eventId);
 }

@@ -13,17 +13,17 @@ public class ValorantService : IValorantService
         _scraper = scraper;
     }
    
-    public List<ValorantEvent> GetLiveEvents()
+    public async Task<List<ValorantEvent>> GetLiveEvents()
     {
-        var liveEvents = _scraper.GetLiveEvents();
+        var liveEvents = await _scraper.GetLiveEvents();
 
         return liveEvents;
     }
 
-    public List<ValorantMatch> GetLiveMatches(string eventUrl)
+    public async Task<List<ValorantMatch>> GetLiveMatches(int eventId)
     {
        
-        var liveMatches = _scraper.GetLiveMatches(eventUrl);
+        var liveMatches = await _scraper.GetLiveMatches(eventId);
         
         return liveMatches;
     }

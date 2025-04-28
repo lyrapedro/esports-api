@@ -30,9 +30,9 @@ app.MapGet("/vlr/events", (IValorantService valorantService) =>
 .WithName("GetLiveEvents")
 .WithOpenApi();
 
-app.MapGet("/vlr/event/{url}/matches", (string url, IValorantService valorantService) =>
+app.MapGet("/vlr/event/{id}/matches", (int id, IValorantService valorantService) =>
     {
-        var matches = valorantService.GetLiveMatches(url);
+        var matches = valorantService.GetLiveMatches(id);
 
         return matches;
     })

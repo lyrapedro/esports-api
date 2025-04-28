@@ -1,70 +1,81 @@
+using System.Diagnostics;
 using EsportsApi.Core.Contracts;
 using EsportsApi.Services.Helpers.Extensions;
 using EsportsApi.Core.Models;
 using HtmlAgilityPack;
+using PuppeteerSharp;
 
 namespace EsportsApi.Core.Scrapers;
 
 public class VlrGgScraper : IValorantScraper
 {
-    public List<ValorantEvent> GetLiveEvents()
+    private readonly IBrowser _browser;
+
+    public VlrGgScraper(IBrowser browser)
+    {
+        _browser = browser;
+    }
+
+    public async Task<List<ValorantEvent>> GetLiveEvents()
     {
         var result = new List<ValorantEvent>();
+        var page = await _browser.NewPageAsync();
         
-        var document = new HtmlWeb().Load("https://www.vlr.gg");
-        
-        var liveEventsH1 = document.DocumentNode.Descendants("h1")
-            .FirstOrDefault(h1 => 
-                h1.GetAttributeValue("class", "").Contains("wf-label") && 
-                h1.GetAttributeValue("class", "").Contains("mod-sidebar") &&
-                h1.InnerText.ToLower().Trim().Contains("live events"));
-        
-        var targetDiv = liveEventsH1.NextSiblings()
-            .FirstOrDefault(node => 
-                node.Name == "div" && 
-                node.GetAttributeValue("class", "").Split(' ')
-                    .Intersect(new[] { "wf-module", "wf-card", "mod-sidebar" })
-                    .Count() == 3);
-        
-        var liveEvents = targetDiv.Descendants("a")
-            .Where(a => a.GetAttributeValue("class", "").Split(' ')
-                .Intersect(new[] { "wf-module-item", "event-item" })
-                .Count() == 2)
-            .ToList();
-        
-        foreach (var eventItem in liveEvents)
+        try
         {
-            var eventName = eventItem.SelectSingleNode(".//div[contains(@class, 'event-item-name')]")?
-                .InnerText.Trim();
-            
-            var eventUrl = eventItem.GetAttributeValue("href", "");
-            eventUrl = eventUrl.Replace("/event", "", StringComparison.Ordinal);
-            
-            var eventId = int.Parse(eventUrl.Split('/')[1]);
-            
-            var eventRegion = eventItem.SelectSingleNode(".//div[contains(@class, 'event-item-tag')]")?
-                .InnerText.Trim();
-            
-            result.Add(new ValorantEvent
+            await page.GoToAsync("https://www.vlr.gg");
+
+            var eventsColumn = await page.WaitForSelectorAsync("div.js-home-events");
+
+            var liveEventsDiv = await eventsColumn.QuerySelectorAsync("h1 + div.wf-module.wf-card.mod-sidebar");
+
+            if (liveEventsDiv == null)
+                return result;
+
+            var liveEvents = await liveEventsDiv.QuerySelectorAllAsync("a");
+
+            foreach (var eventItem in liveEvents)
             {
-                Id = eventId,
-                Name = eventName,
-                Region = eventRegion,
-                Url = eventUrl
-            });
+                var eventNameElement = await eventItem.QuerySelectorAsync("div.event-item-name");
+                var eventName = eventNameElement != null
+                    ? (await page.EvaluateFunctionAsync<string>("el => el.textContent.trim()", eventNameElement))
+                    : null;
+
+                var eventUrl = await page.EvaluateFunctionAsync<string>("el => el.getAttribute('href')", eventItem) ??
+                               "";
+                eventUrl = eventUrl.Replace("/event", "", StringComparison.Ordinal);
+
+                var eventId = int.Parse(eventUrl.Split('/')[1]);
+
+                var eventRegionElement = await eventItem.QuerySelectorAsync("div.event-item-tag");
+                var eventRegion = eventRegionElement != null
+                    ? (await page.EvaluateFunctionAsync<string>("el => el.textContent.trim()", eventRegionElement))
+                    : null;
+
+                result.Add(new ValorantEvent
+                {
+                    Id = eventId,
+                    Name = eventName,
+                    Region = eventRegion,
+                    Url = eventUrl
+                });
+            }
+        }
+        finally
+        {
+            await page.CloseAsync();
         }
 
         return result;
     }
 
-    public List<ValorantMatch> GetLiveMatches(string eventUrl)
+    public async Task<List<ValorantMatch>> GetLiveMatches(int eventId)
     {
         var result = new List<ValorantMatch>();
         
-        var decodedUri = Uri.UnescapeDataString(eventUrl);
-        var url = $"https://www.vlr.gg/event/matches{decodedUri}";
+        var url = $"https://www.vlr.gg/event/matches/{eventId}";
         
-        var document = new HtmlWeb().Load(url);
+        var document = await new HtmlWeb().LoadFromWebAsync(url);
         
         var liveMatches = document.DocumentNode.Descendants("a")
             .Where(a => a.GetAttributeValue("class", "").Contains("wf-module-item"))
@@ -87,7 +98,7 @@ public class VlrGgScraper : IValorantScraper
             
             var matchUrl = match.GetAttributeValue("href", "");
 
-            var bsMatch = GetLiveMatchPage(matchUrl);
+            var bsMatch = await GetLiveMatchPage(matchUrl);
             
             var matchType = bsMatch.DocumentNode.SelectNodes("//div[contains(@class, 'match-header-vs-note')]")[1].InnerText.Trim();
             
@@ -171,8 +182,8 @@ public class VlrGgScraper : IValorantScraper
         return result;
     }
 
-    private HtmlDocument GetLiveMatchPage(string matchUrl)
+    private async Task<HtmlDocument> GetLiveMatchPage(string matchUrl)
     {
-        return new HtmlWeb().Load($"https://www.vlr.gg{matchUrl}");
+        return await new HtmlWeb().LoadFromWebAsync($"https://www.vlr.gg{matchUrl}");
     }
 }

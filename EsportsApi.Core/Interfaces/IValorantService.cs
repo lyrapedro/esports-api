@@ -4,6 +4,6 @@ namespace EsportsApi.Core.Interfaces;
 
 public interface IValorantService
 {
-    List<ValorantEvent> GetLiveEvents();
-    List<ValorantMatch> GetLiveMatches(string eventUrl);
+    Task<List<ValorantEvent>> GetLiveEvents();
+    Task<List<ValorantMatch>> GetLiveMatches(int eventId);
 }
