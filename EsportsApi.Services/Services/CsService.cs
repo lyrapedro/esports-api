@@ -13,12 +13,12 @@ public class CsService : ICsService
         _scraper = scraper;
     }
     
-    public List<CsEvent> GetLiveEvents()
+    public async Task<List<CsEvent>> GetLiveEvents()
     {
-        throw new NotImplementedException();
+        return await _scraper.GetLiveEvents();
     }
 
-    public List<CsMatch> GetLiveMatches(int eventId)
+    public async Task<List<CsMatch>> GetLiveMatches(int eventId)
     {
         throw new NotImplementedException();
     }

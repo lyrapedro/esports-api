@@ -4,6 +4,6 @@ namespace EsportsApi.Core.Contracts;
 
 public interface ICsScraper
 {
-    public List<CsEvent> GetLiveEvents();
-    public List<CsMatch> GetLiveMatches(int eventId);
+    public Task<List<CsEvent>> GetLiveEvents();
+    public Task<List<CsMatch>> GetLiveMatches(int eventId);
 }
