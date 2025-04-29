@@ -6,12 +6,18 @@ namespace EsportsApi.Core.Scrapers;
 
 public class VlrGgScraper : IValorantScraper
 {
+    private readonly IHttpClientFactory _httpClientFactory;
+    public VlrGgScraper(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+    }
+    
     public async Task<List<ValorantEvent>> GetLiveEvents()
     {
         var result = new List<ValorantEvent>();
-        
-        var client = new HttpClient();
-        var response = await client.GetAsync("https://www.vlr.gg");
+
+        var client = _httpClientFactory.CreateClient("VlrGGClient");
+        var response = await client.GetAsync("");
             
         var content = await response.Content.ReadAsStringAsync();
         var parser = new HtmlParser();
@@ -54,8 +60,8 @@ public class VlrGgScraper : IValorantScraper
     {
         var result = new List<ValorantMatch>();
         
-        var client = new HttpClient();
-        var response = await client.GetAsync($"https://www.vlr.gg/event/matches/{eventId}");
+        var client = _httpClientFactory.CreateClient("VlrGGClient");
+        var response = await client.GetAsync($"event/matches/{eventId}");
             
         var content = await response.Content.ReadAsStringAsync();
         var parser = new HtmlParser();

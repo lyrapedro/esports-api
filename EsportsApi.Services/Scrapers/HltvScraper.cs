@@ -8,14 +8,18 @@ namespace EsportsApi.Core.Scrapers;
 
 public class HltvScraper : ICsScraper
 {
+    private readonly IHttpClientFactory _httpClientFactory;
+    
+    public HltvScraper(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+    }
+    
     public async Task<List<CsEvent>> GetLiveEvents()
     {
         var result = new List<CsEvent>();
-        
-        var endpoint = "https://production-sfo.browserless.io/chromium/bql";
-        var token = "S7onTb80xNTt4w5ae08c992979cb077821170a1e88";
-        
-        using var httpClient = new HttpClient();
+
+        var httpClient = _httpClientFactory.CreateClient("Browserless");
     
         var requestBody = new
         {
@@ -30,8 +34,7 @@ public class HltvScraper : ICsScraper
             }"
         };
     
-        var response = await httpClient.PostAsync(
-            $"{endpoint}?token={token}",
+        var response = await httpClient.PostAsync("",
             new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json")
         );
     

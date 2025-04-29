@@ -2,7 +2,6 @@ using EsportsApi.Core.Contracts;
 using EsportsApi.Core.Interfaces;
 using EsportsApi.Core.Scrapers;
 using Microsoft.Extensions.DependencyInjection;
-using PuppeteerSharp;
 
 namespace EsportsApi.Services;
 

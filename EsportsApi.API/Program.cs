@@ -9,6 +9,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScraperServices();
+builder.Services.AddHttpClient("VlrGGClient", config =>
+{
+    config.BaseAddress = new Uri("https://vlr.gg/");
+    config.Timeout = new TimeSpan(0, 0, 15);
+    config.DefaultRequestHeaders.Clear();
+});
+builder.Services.AddHttpClient("Browserless", config =>
+{
+    config.BaseAddress = new Uri($"{builder.Configuration["BrowserlessIO:Endpoint"]}?token={builder.Configuration["BrowserlessIO:Token"]}");
+    config.Timeout = new TimeSpan(0, 0, 15);
+    config.DefaultRequestHeaders.Clear();
+});
 
 var app = builder.Build();
 
