@@ -1,14 +1,14 @@
+using EsportsApi.Core.Contracts;
 using EsportsApi.Core.Interfaces;
 using EsportsApi.Core.Models;
-using EsportsApi.Core.Scrapers;
 
 namespace EsportsApi.Services;
 
 public class ValorantService : IValorantService
 {
-    private readonly VlrGgScraper _scraper;
+    private readonly IValorantScraper _scraper;
     
-    public ValorantService(VlrGgScraper scraper)
+    public ValorantService(IValorantScraper scraper)
     {
         _scraper = scraper;
     }

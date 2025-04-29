@@ -1,14 +1,14 @@
+using EsportsApi.Core.Contracts;
 using EsportsApi.Core.Interfaces;
 using EsportsApi.Core.Models;
-using EsportsApi.Core.Scrapers;
 
 namespace EsportsApi.Services;
 
 public class CsService : ICsService
 {
-    private readonly HltvScraper _scraper;
+    private readonly ICsScraper _scraper;
     
-    public CsService(HltvScraper scraper)
+    public CsService(ICsScraper scraper)
     {
         _scraper = scraper;
     }

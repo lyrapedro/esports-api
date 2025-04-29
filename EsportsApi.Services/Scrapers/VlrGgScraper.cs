@@ -1,8 +1,7 @@
-using System.Diagnostics;
+using System.Text.Json;
 using EsportsApi.Core.Contracts;
-using EsportsApi.Services.Helpers.Extensions;
 using EsportsApi.Core.Models;
-using HtmlAgilityPack;
+using EsportsApi.Services.DTO;
 using PuppeteerSharp;
 
 namespace EsportsApi.Core.Scrapers;
@@ -72,118 +71,92 @@ public class VlrGgScraper : IValorantScraper
     public async Task<List<ValorantMatch>> GetLiveMatches(int eventId)
     {
         var result = new List<ValorantMatch>();
-        
-        var url = $"https://www.vlr.gg/event/matches/{eventId}";
-        
-        var document = await new HtmlWeb().LoadFromWebAsync(url);
-        
-        var liveMatches = document.DocumentNode.Descendants("a")
-            .Where(a => a.GetAttributeValue("class", "").Contains("wf-module-item"))
-            .Where(a => 
-            {
-                var mlStatus = a.Descendants("div")
-                    .FirstOrDefault(d => d.GetAttributeValue("class", "").Contains("ml-status"));
-                
-                return mlStatus != null && mlStatus.InnerText.Trim() == "LIVE";
-            })
-            .ToList();
 
-        foreach (var match in liveMatches)
+        var page = await _browser.NewPageAsync();
+
+        try
         {
-            var teamsDiv = match.SelectSingleNode(".//div[contains(@class, 'match-item-vs')]");
-            var teamsNames = teamsDiv.SelectNodes(".//div[contains(@class, 'match-item-vs-team-name')]");
-            
-            var team1Name = teamsNames[0].SelectSingleNode(".//div[contains(@class, 'text-of')]").InnerText.Trim();
-            var team2Name = teamsNames[1].SelectSingleNode(".//div[contains(@class, 'text-of')]").InnerText.Trim();
-            
-            var matchUrl = match.GetAttributeValue("href", "");
+            await page.GoToAsync($"https://www.vlr.gg/event/matches/{eventId}");
 
-            var bsMatch = await GetLiveMatchPage(matchUrl);
-            
-            var matchType = bsMatch.DocumentNode.SelectNodes("//div[contains(@class, 'match-header-vs-note')]")[1].InnerText.Trim();
-            
-            var mapScore = bsMatch.DocumentNode.SelectNodes("//div[contains(@class, 'match-header-vs-score')]")[1]
-                .SelectNodes(".//span");
-            var team1MapScore = mapScore[0].InnerText.Trim();
-            var team2MapScore = mapScore[2].InnerText.Trim(); // 2 porque o índice 1 é o separador (:)
-            
-            var mapsContainers = bsMatch.DocumentNode
-                .Descendants("div")
-                .Where(div => 
-                    div.GetClasses().Contains("vm-stats-game") && 
-                    div.Attributes.Contains("data-game-id"))
-                .ToList();
-            var mapDivs = new List<HtmlNode>();
-            
-            foreach (var div in mapsContainers)
+            var liveMatchesUrl = await page.EvaluateFunctionAsync<List<string>>(@"() => {
+                return Array.from(document.querySelectorAll('a.wf-module-item'))
+                    .filter(a => {
+                        const statusDiv = a.querySelector('div.ml-status');
+                        return statusDiv && statusDiv.innerText.trim() === 'LIVE';
+                    })
+                    .map(a => a.getAttribute('href'));
+            }");
+
+            foreach (var matchUrl in liveMatchesUrl)
             {
-                var gameId = div.GetAttributeValue("data-game-id", "");
-                if (gameId != "all")
+                await page.GoToAsync($"https://vlr.gg{matchUrl}");
+
+                var matchId = int.Parse(matchUrl.Split("/")[1]);
+
+                var matchDataJson = await page.EvaluateFunctionAsync<string>(@"() => {
+                    const teamNames = Array.from(document.querySelectorAll('.team-name'))
+                        .map(el => el.innerText.trim());
+
+                    const matchTypeDivs = document.querySelectorAll('div.match-header-vs-note');
+                    const matchType = matchTypeDivs.length > 1 ? matchTypeDivs[1].innerText.trim() : '';
+
+                    const mapScore = document.querySelectorAll('.match-header-vs-score span');
+                    const team1MapScore = mapScore[1].innerText.trim();
+                    const team2MapScore = mapScore[3].innerText.trim();
+
+                    const mapDivs = Array.from(document.querySelectorAll('div.vm-stats-game[data-game-id]'))
+                        .filter(div => div.getAttribute('data-game-id') !== 'all');
+
+                    const maps = mapDivs.map(div => {
+                        const mapNameElement = div.querySelector('.map span');
+                        const mapName = mapNameElement ? mapNameElement.childNodes[0].textContent.trim() : '';
+
+                        const teamDivs = div.querySelectorAll('.team');
+                        const team1Score = teamDivs[0]?.querySelector('.score')?.innerText.trim() || '0';
+                        const team2Score = teamDivs[1]?.querySelector('.score')?.innerText.trim() || '0';
+
+                        return {
+                            [mapName]: {
+                                [teamNames[0]]: parseInt(team1Score),
+                                [teamNames[1]]: parseInt(team2Score)
+                            }
+                        };
+                    });
+
+                    return JSON.stringify({
+                        team1Name: teamNames[0],
+                        team2Name: teamNames[1],
+                        matchType,
+                        team1MapScore,
+                        team2MapScore,
+                        maps
+                    });
+                }");
+
+                var matchData = JsonSerializer.Deserialize<MatchData>(matchDataJson, new JsonSerializerOptions
                 {
-                    mapDivs.Add(div);
-                }
-            }
-            
-            var maps = new List<Dictionary<string, Dictionary<string, int>>>();
-            
-            foreach (var mapDiv in mapDivs)
-            {
-                var mapName = mapDiv
-                    .Descendants("div")
-                    .FirstOrDefault(div => div.GetClasses().Contains("map"))?
-                    .Descendants("span")
-                    .FirstOrDefault()?
-                    .ChildNodes
-                    .FirstOrDefault(node => node.NodeType == HtmlNodeType.Text)?
-                    .InnerText
-                    .Trim();
-                
-                var teams = mapDiv
-                    .Descendants("div")
-                    .Where(div => div.GetClasses().Contains("team"))
-                    .ToList();
+                    PropertyNameCaseInsensitive = true
+                });
 
-                var team1Score = teams[0]
-                    .Descendants()
-                    .FirstOrDefault(node => node.GetClasses().Contains("score"))?
-                    .InnerText
-                    .Trim();
-
-                var team2Score = teams[1]
-                    .Descendants()
-                    .FirstOrDefault(node => node.GetClasses().Contains("score"))?
-                    .InnerText
-                    .Trim();
-
-                
-                maps.Add(new Dictionary<string, Dictionary<string, int>>
+                result.Add(new ValorantMatch
                 {
-                    [mapName] = new Dictionary<string, int>
+                    Id = matchId,
+                    Match = $"{matchData.Team1Name} vs {matchData.Team2Name}",
+                    Type = matchData.MatchType,
+                    MapScore = new Dictionary<string, int>
                     {
-                        [team1Name] = int.Parse(team1Score),
-                        [team2Name] = int.Parse(team2Score)
-                    }
+                        [matchData.Team1Name] = int.Parse(matchData.Team1MapScore),
+                        [matchData.Team2Name] = int.Parse(matchData.Team2MapScore)
+                    },
+                    Maps = matchData.Maps
                 });
             }
-            
-            result.Add(new ValorantMatch
-            {
-                Match = $"{team1Name} vs {team2Name}",
-                Type = matchType,
-                MapScore = new Dictionary<string, int>
-                {
-                    [team1Name] = int.Parse(team1MapScore),
-                    [team2Name] = int.Parse(team2MapScore)
-                },
-                Maps = maps
-            });
+
+            return result;
         }
-
-        return result;
-    }
-
-    private async Task<HtmlDocument> GetLiveMatchPage(string matchUrl)
-    {
-        return await new HtmlWeb().LoadFromWebAsync($"https://www.vlr.gg{matchUrl}");
+        finally
+        {
+            await page.CloseAsync();
+        }
     }
 }

@@ -1,3 +1,4 @@
+using EsportsApi.Core.Contracts;
 using EsportsApi.Core.Interfaces;
 using EsportsApi.Core.Scrapers;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +28,7 @@ public static class ServiceCollectionExtensions
             }).GetAwaiter().GetResult(); // Block until the browser is launched
         });
         
-        services.AddTransient<VlrGgScraper>();
+        services.AddTransient<IValorantScraper, VlrGgScraper>();
         services.AddScoped<IValorantService, ValorantService>();
         
         return services;
