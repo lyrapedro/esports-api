@@ -1,10 +1,10 @@
 using System.Text;
 using System.Text.Json;
 using AngleSharp.Html.Parser;
-using EsportsApi.Core.Contracts;
-using EsportsApi.Core.Models;
+using EsportsApi.Application.Contracts;
+using EsportsApi.Application.Models;
 
-namespace EsportsApi.Core.Scrapers;
+namespace EsportsApi.Application.Scrapers;
 
 public class HltvScraper : ICsScraper
 {

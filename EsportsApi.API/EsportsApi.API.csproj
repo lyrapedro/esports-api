@@ -9,7 +9,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.15"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
-        <ProjectReference Include="..\EsportsApi.Services\EsportsApi.Services.csproj" />
+        <ProjectReference Include="..\EsportsApi.Application\EsportsApi.Application.csproj" />
     </ItemGroup>
 
 </Project>

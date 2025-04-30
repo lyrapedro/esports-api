@@ -1,5 +1,5 @@
-using EsportsApi.Core.Interfaces;
-using EsportsApi.Services;
+using EsportsApi.Application.Contracts;
+using EsportsApi.Application.Scrapers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScraperServices();
+builder.Services.AddScoped<ICsScraper, HltvScraper>();
+builder.Services.AddScoped<IValorantScraper, VlrGgScraper>();
 builder.Services.AddHttpClient("VlrGGClient", config =>
 {
     config.BaseAddress = new Uri("https://vlr.gg/");
@@ -33,27 +34,27 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/vlr/events", (IValorantService valorantService) =>
+app.MapGet("/vlr/events", (IValorantScraper valorantScraper) =>
     {
-        var events = valorantService.GetLiveEvents();
+        var events = valorantScraper.GetLiveEvents();
 
         return events;
     })
 .WithName("VlrGetLiveEvents")
 .WithOpenApi();
 
-app.MapGet("/vlr/event/{id}/matches", (int id, IValorantService valorantService) =>
+app.MapGet("/vlr/event/{id}/matches", (int id, IValorantScraper valorantScraper) =>
     {
-        var matches = valorantService.GetLiveMatches(id);
+        var matches = valorantScraper.GetLiveMatches(id);
 
         return matches;
     })
     .WithName("VlrGetLiveMatchesFromEvent")
     .WithOpenApi();
 
-app.MapGet("/cs/events", (ICsService csService) =>
+app.MapGet("/cs/events", (ICsScraper csScraper) =>
     {
-        var matches = csService.GetLiveEvents();
+        var matches = csScraper.GetLiveEvents();
 
         return matches;
     })

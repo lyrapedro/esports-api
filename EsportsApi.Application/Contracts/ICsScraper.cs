@@ -1,6 +1,6 @@
-using EsportsApi.Core.Models;
+using EsportsApi.Application.Models;
 
-namespace EsportsApi.Core.Contracts;
+namespace EsportsApi.Application.Contracts;
 
 public interface ICsScraper
 {

@@ -1,8 +1,8 @@
 using AngleSharp.Html.Parser;
-using EsportsApi.Core.Contracts;
-using EsportsApi.Core.Models;
+using EsportsApi.Application.Contracts;
+using EsportsApi.Application.Models;
 
-namespace EsportsApi.Core.Scrapers;
+namespace EsportsApi.Application.Scrapers;
 
 public class VlrGgScraper : IValorantScraper
 {
@@ -104,8 +104,6 @@ public class VlrGgScraper : IValorantScraper
                 var teamDivs = div.QuerySelectorAll(".team");
                 var team1Score = teamDivs[0]?.QuerySelector(".score")?.TextContent.Trim() ?? "-";
                 var team2Score = teamDivs[1]?.QuerySelector(".score")?.TextContent.Trim() ?? "-";
-                Console.WriteLine(team1Score);
-                Console.WriteLine(team2Score);
                 
                 return new Dictionary<string, Dictionary<string, int>>
                 {
