@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EsportsApi.API", "EsportsApi.API\EsportsApi.API.csproj", "{3E0C94E1-8889-4D81-84B2-2107CBE75237}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EsportsApi.Application", "EsportsApi.Application\EsportsApi.Application.csproj", "{94665476-58B6-4FEA-BD08-7505F0B00CD5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E0C94E1-8889-4D81-84B2-2107CBE75237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E0C94E1-8889-4D81-84B2-2107CBE75237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E0C94E1-8889-4D81-84B2-2107CBE75237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E0C94E1-8889-4D81-84B2-2107CBE75237}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94665476-58B6-4FEA-BD08-7505F0B00CD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94665476-58B6-4FEA-BD08-7505F0B00CD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94665476-58B6-4FEA-BD08-7505F0B00CD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94665476-58B6-4FEA-BD08-7505F0B00CD5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
