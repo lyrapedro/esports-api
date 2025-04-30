@@ -56,7 +56,7 @@ public class VlrGgScraper : IValorantScraper
         return result;
     }
 
-    public async Task<List<ValorantMatch>> GetLiveMatches(int eventId)
+    public async Task<List<ValorantMatch>> GetLiveMatchesFromEvent(int eventId)
     {
         var result = new List<ValorantMatch>();
         

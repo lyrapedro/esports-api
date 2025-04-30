@@ -19,9 +19,11 @@ builder.Services.AddHttpClient("VlrGGClient", config =>
 builder.Services.AddHttpClient("Browserless", config =>
 {
     config.BaseAddress = new Uri($"{builder.Configuration["BrowserlessIO:Endpoint"]}?token={builder.Configuration["BrowserlessIO:Token"]}");
-    config.Timeout = new TimeSpan(0, 0, 15);
+    config.Timeout = new TimeSpan(0, 0, 35);
     config.DefaultRequestHeaders.Clear();
 });
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -34,31 +36,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/vlr/events", (IValorantScraper valorantScraper) =>
-    {
-        var events = valorantScraper.GetLiveEvents();
-
-        return events;
-    })
-.WithName("VlrGetLiveEvents")
-.WithOpenApi();
-
-app.MapGet("/vlr/event/{id}/matches", (int id, IValorantScraper valorantScraper) =>
-    {
-        var matches = valorantScraper.GetLiveMatches(id);
-
-        return matches;
-    })
-    .WithName("VlrGetLiveMatchesFromEvent")
-    .WithOpenApi();
-
-app.MapGet("/cs/events", (ICsScraper csScraper) =>
-    {
-        var matches = csScraper.GetLiveEvents();
-
-        return matches;
-    })
-    .WithName("CsGetLiveEvents")
-    .WithOpenApi();
+app.MapControllers();
 
 app.Run();
