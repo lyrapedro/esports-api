@@ -182,6 +182,7 @@ public class HltvScraper : ICsScraper
             result.Add(new CsMatch
             {
                 Id = matchId,
+                Url = fullUrl,
                 Match = $"{team1Name} vs {team2Name}",
                 Maps = maps,
                 Type = $"Bo{mapsCount}"

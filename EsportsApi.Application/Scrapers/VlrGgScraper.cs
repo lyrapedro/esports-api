@@ -24,7 +24,7 @@ public class VlrGgScraper : IValorantScraper
         var html = await parser.ParseDocumentAsync(content);
             
         var eventsColumn = html.QuerySelector("div.js-home-events");
-        var liveEventsDiv = eventsColumn.QuerySelector("h1 + div.wf-module.wf-card.mod-sidebar");
+        var liveEventsDiv = eventsColumn.QuerySelector("h1:contains('live') + div.wf-module.wf-card.mod-sidebar");
 
         if (liveEventsDiv == null)
             return result;
@@ -75,7 +75,8 @@ public class VlrGgScraper : IValorantScraper
 
         foreach (var matchUrl in liveMatchesUrl)
         {
-            var matchPageResponse = await client.GetAsync($"https://vlr.gg{matchUrl}");
+            var matchFullUrl = $"https://vlr.gg{matchUrl}";
+            var matchPageResponse = await client.GetAsync(matchFullUrl);
             var matchPageContent = await matchPageResponse.Content.ReadAsStringAsync();
 
             var matchPageHtml = await parser.ParseDocumentAsync(matchPageContent);
@@ -118,6 +119,7 @@ public class VlrGgScraper : IValorantScraper
             result.Add(new ValorantMatch
             {
                 Id = matchId,
+                Url = matchFullUrl,
                 Match = $"{team1Name} vs {team2Name}",
                 Maps = maps,
                 Type = matchType,
