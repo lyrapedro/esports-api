@@ -22,6 +22,12 @@ builder.Services.AddHttpClient("Browserless", config =>
     config.Timeout = new TimeSpan(0, 0, 35);
     config.DefaultRequestHeaders.Clear();
 });
+builder.Services.AddHttpClient("LolEsportsClient", config =>
+{
+    config.BaseAddress = new Uri("https://lolesports.com/");
+    config.Timeout = new TimeSpan(0, 0, 15);
+    config.DefaultRequestHeaders.Clear();
+});
 
 builder.Services.AddControllers();
 
